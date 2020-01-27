@@ -4,6 +4,7 @@ Created on Oct 17, 2015
 @author: synkarius
 '''
 
+from castervoice.lib.imports import *
 
 class SymbolSpecs(object):
     IF = "iffae"
@@ -36,6 +37,8 @@ class SymbolSpecs(object):
 
     COMMENT = "add comment"
     LONG_COMMENT = "long comment"
+    COMMENT_OUT = "comment out"
+    REMOVE_COMMENT = "remove comment"
 
     NULL = "value not"
 
@@ -50,3 +53,4 @@ class SymbolSpecs(object):
     @staticmethod
     def set_cancel_word(spec):
         SymbolSpecs.CANCEL = spec
+    

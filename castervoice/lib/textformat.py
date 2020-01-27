@@ -2,7 +2,8 @@ from builtins import str
 
 from castervoice.lib import settings
 from castervoice.lib.actions import Text
-
+from castervoice.lib import context
+from castervoice.lib.actions import Key
 
 class TextFormat():
     '''
@@ -73,6 +74,10 @@ class TextFormat():
     def normalize_text_format(cls, capitalization, spacing):
         if capitalization == 0:
             capitalization = 5
+        if spacing == 0 and capitalization == 1:
+            spacing = 3
+        if spacing == 0 and capitalization == 2:
+            spacing = 1
         if spacing == 0 and capitalization == 3:
             spacing = 1
         return (capitalization, spacing)
@@ -131,5 +136,17 @@ def prior_text_format(big, textnv):
 
 
 def master_format_text(capitalization, spacing, textnv):
+    print("capitalization={} spacing={}".format(capitalization, spacing))
     capitalization, spacing = TextFormat.normalize_text_format(capitalization, spacing)
     Text(TextFormat.formatted_text(capitalization, spacing, str(textnv))).execute()
+
+def convert_format(capitalization, spacing):
+    capitalization, spacing = TextFormat.normalize_text_format(capitalization, spacing)
+    
+    selection = context.read_nmax_tries(5, .01, same_is_okay=True)
+    if (not selection is None) and len(selection) > 0:
+        
+        Key("delete").execute()
+        split_string = " ".join(selection.replace("_", " ").replace(".", " ").split(" "))
+        Text(TextFormat.formatted_text(capitalization, spacing, split_string)).execute()
+        

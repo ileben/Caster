@@ -6,6 +6,8 @@ class IERule(MergeRule):
     mapping = {
         "address bar":
             R(Key("a-d")),
+        "new window":
+            R(Key("c-n")),
         "new folder":
             R(Key("cs-n")),
         "new file":

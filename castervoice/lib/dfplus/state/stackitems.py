@@ -7,7 +7,9 @@ from dragonfly import Pause, ActionBase, get_engine
 
 from castervoice.lib import settings
 
+from castervoice.lib.dfplus.state.async import AsyncItem, AsyncState
 
+    
 class StackItem:
     def __init__(self, type):
         assert type in [
@@ -91,11 +93,22 @@ class StackItemSeeker(StackItemRegisteredAction):
                 result.append(context_level)
         return result
 
-    def executeCL(self, context_level
+    def executeCL(self, context_level, iteration
                   ):  # the return value is whether to terminate an AsynchronousAction
         action = context_level.result.f
         if action is None:
             return False
+        elif isinstance(action, AsyncItem):
+            async_state = AsyncState()
+            async_state.iteration = iteration
+            
+            async_data = {"async_state":async_state}
+            if isinstance(context_level.dragonfly_data, dict):
+                async_data.update(context_level.dragonfly_data)
+            
+            action.execute(async_data)
+            return async_state.complete
+            
         elif isinstance(action, ActionBase):
             action.execute(context_level.dragonfly_data)
             return False
@@ -228,7 +241,7 @@ class StackItemAsynchronous(StackItemSeeker):
         execute = self.execute
 
         def closure():
-            do_terminate = execute_context_levels(context_level)
+            do_terminate = execute_context_levels(context_level, count["value"])
             if do_terminate:
                 execute(do_terminate)
 

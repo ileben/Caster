@@ -8,6 +8,9 @@ from dragonfly.actions.action_mimic import Mimic
 from castervoice.lib.ccr.standard import SymbolSpecs
 from castervoice.lib.ccr.core.punctuation import text_punc_dict, double_text_punc_dict
 from castervoice.lib.alphanumeric import caster_alphabet
+from castervoice.lib.context import BracketClamp
+from castervoice.lib.context import NavigationAction
+from castervoice.lib import lex
 
 _NEXUS = control.nexus()
 
@@ -20,15 +23,37 @@ for key, value in double_text_punc_dict.items():
         raise Exception(
             "Need to deal with nonstandard pair length in double_text_punc_dict.")
 
+capitalization_dict = {
+    "yell": 1,
+    "title": 2,
+    "camel": 3,
+    "sing": 4,
+    "laws": 5
+}
 
+spacing_dict = {
+    "gum": 1,
+    "gun": 1,
+    "spine": 2,
+    "snake": 3,
+    "pebble": 4,
+    "incline": 5,
+    "dissent": 6,
+    "descent": 6
+}
+        
 class NavigationNon(MergeRule):
     mapping = {
+        "new word <text>":
+            R(Function(context.newWord)),
         "<direction> <time_in_seconds>":
             AsynchronousAction([L(S(["cancel"], Key("%(direction)s"), consume=False))],
                                repetitions=1000,
                                blocking=False),
         "erase multi clipboard":
             R(Function(navigation.erase_multi_clipboard, nexus=_NEXUS)),
+        'save':
+            R(Key("c-s"), rspec="save"),
         "find":
             R(Key("c-f")),
         "find next [<n>]":
@@ -55,22 +80,30 @@ class NavigationNon(MergeRule):
             R(Function(navigation.middle_click, nexus=_NEXUS)),
         "shift right click":
             R(Key("shift:down") + Mouse("right") + Key("shift:up")),
-        "curse <direction> [<direction2>] [<nnavi500>] [<dokick>]":
-            R(Function(navigation.curse)),
+        #"curse <direction> [<direction2>] [<nnavi500>] [<dokick>]":
+            #R(Function(navigation.curse)),
+        "curse":
+            R(Function(lex.follow_gaze, enable=True)),
+        "uncurse":
+            R(Function(lex.follow_gaze, enable=False)),
         "scree <direction> [<nnavi500>]":
             R(Function(navigation.wheel_scroll)),
+        "fly [<nnavi500>]":
+            R(Function(navigation.wheel_scroll, direction="up")),
+        "dive [<nnavi500>]":
+            R(Function(navigation.wheel_scroll, direction="down")),
         "colic":
             R(Key("control:down") + Mouse("left") + Key("control:up")),
-        "garb [<nnavi500>]":
-            R(
-                Mouse("left") + Mouse("left") +
-                Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS)),
-        "drop [<nnavi500>]":
-            R(
-                Mouse("left") + Mouse("left") + Function(navigation.drop_keep_clipboard,
-                                                         nexus=_NEXUS,
-                                                         capitalization=0,
-                                                         spacing=0)),
+        #"garb [<nnavi500>]":
+            #R(
+                #Mouse("left") + Mouse("left") +
+                #Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS)),
+        #"drop [<nnavi500>]":
+            #R(
+                #Mouse("left") + Mouse("left") + Function(navigation.drop_keep_clipboard,
+                                                         #nexus=_NEXUS,
+                                                         #capitalization=0,
+                                                         #spacing=0)),
         "sure stoosh":
             R(Key("c-c")),
         "sure cut":
@@ -102,7 +135,8 @@ class NavigationNon(MergeRule):
             R(Key("sw-right"))*Repeat(extra="n"),
         "(next | prior) window":
             R(Key("ca-tab, enter")),
-        "switch (window | windows)":
+        #"switch [window | windows]":
+        "Wendy|windy":
             R(Key("ca-tab"))*Repeat(extra="n"),
         "next tab [<n>]":
             R(Key("c-pgdown"))*Repeat(extra="n"),
@@ -174,6 +208,15 @@ class Navigation(MergeRule):
     pronunciation = CCRMerger.CORE[1]
 
     mapping = {
+        "test":
+            #R(Function(context.test)),
+            R(Function(lex.get_gaze_position)),
+        "zoom in|zooming|enhance":
+            R(Function(lex.zoom)),
+        "follow gaze":
+            R(Function(lex.follow_gaze, enable=True)),
+        "unfollow gaze":
+            R(Function(lex.follow_gaze, enable=False)),
         # "periodic" repeats whatever comes next at 1-second intervals until "terminate"
         # or "escape" (or your SymbolSpecs.CANCEL) is spoken or 100 tries occur
         "periodic":
@@ -187,61 +230,136 @@ class Navigation(MergeRule):
                       use_spoken=True))
             ]),
         # VoiceCoder-inspired -- these should be done at the IDE level
-        "fill <target>":
-            R(Key("escape, escape, end"), show=False) + AsynchronousAction(
-                [L(S(["cancel"], Function(context.fill_within_line, nexus=_NEXUS)))],
-                time_in_seconds=0.2,
-                repetitions=50),
-        "jump in":
-            AsynchronousAction([L(S(["cancel"], context.nav, ["right", "(~[~{~<"]))],
-                               time_in_seconds=0.1,
-                               repetitions=50),
-        "jump out":
-            AsynchronousAction([L(S(["cancel"], context.nav, ["right", ")~]~}~>"]))],
-                               time_in_seconds=0.1,
-                               repetitions=50),
-        "jump back":
-            AsynchronousAction([L(S(["cancel"], context.nav, ["left", "(~[~{~<"]))],
-                               time_in_seconds=0.1,
-                               repetitions=50),
-        "jump back in":
-            AsynchronousAction([L(S(["cancel"], context.nav, ["left", "(~[~{~<"]))],
-                               finisher=Key("right"),
-                               time_in_seconds=0.1,
-                               repetitions=50),
-
+        "backfill <textnv>":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, {"textnv":"target"}, direction="left", match_brackets=False) +
+                               AsyncFunction(context.reach_target, direction="left", select=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "(fill|feel) <textnv>":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, {"textnv":"target"}, direction="right", match_brackets=False) +
+                               AsyncFunction(context.reach_target, direction="right", select=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "leaf [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(lex.next_expression, {"nnavi10":"count"}, direction="left") +
+                               AsyncFunction(context.reach_target, direction="left", select=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "reef [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(lex.next_expression, {"nnavi10":"count"}, direction="right") +
+                               AsyncFunction(context.reach_target, direction="right", select=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "narg [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="right", target=",")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="right", move_over=True) +
+                               AsyncFunction(context.find_target, direction="right", target=",~)", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="right")
+                               )))], time_in_seconds=0, repetitions=10),
+        "bark [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target=",")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="left", move_over=True) +
+                               AsyncFunction(context.find_target, direction="left", target="(~,", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="left")
+                               )))], time_in_seconds=0, repetitions=10),
+        "shackle bracket [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target="(~[~{") +
+                               AsyncFunction(context.reach_target, direction="left") +
+                               AsyncFunction(context.find_target, direction="right", target=")~]~}", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="right")
+                               )))], time_in_seconds=0, repetitions=10),
+        "shackle argument":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target="(~,") +
+                               AsyncFunction(context.reach_target, direction="left") +
+                               AsyncFunction(context.find_target, direction="right", target=",~)", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="right")
+                               )))], time_in_seconds=0, repetitions=10),
+        "(jump in|jumping) [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="right", target="(~[~{")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="right", move_over=True) +
+                               AsyncFunction(context.find_target, direction="right", target=",~;~]~)~}", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="right")
+                               )))], time_in_seconds=0, repetitions=10),
+        "jump out [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="right", target=")~]~}")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="right", move_over=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "bounce out [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target="(~[~{")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="left", move_over=True)
+                               )))], time_in_seconds=0, repetitions=10),
+        "(bounce in|bouncing) [<nnavi10>]":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target=")~]~}")*AsyncRepeat(extra="nnavi10") +
+                               AsyncFunction(context.reach_target, direction="left", move_over=True) +
+                               AsyncFunction(context.find_target, direction="left", target=",~;~[~(~{", keep_selection=True) +
+                               AsyncFunction(context.select_to_target, direction="left")
+                               )))], time_in_seconds=0, repetitions=10),
+        "jump over":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="right", target="(~[~{") +
+                               AsyncFunction(context.find_target, direction="right", target=")~]~}") +
+                               AsyncFunction(context.reach_target, direction="right", move_over=True)
+                               )))], time_in_seconds=0, repetitions=50),
+        "bounce over":
+            AsynchronousAction([L(S(["cancel"], NavigationAction(
+                               AsyncFunction(context.find_target, direction="left", target=")~]~}") +
+                               AsyncFunction(context.find_target, direction="left", target="(~[~{") +
+                               AsyncFunction(context.reach_target, direction="left", move_over=True)
+                               )))], time_in_seconds=0, repetitions=50),
         # keyboard shortcuts
-        'save':
-            R(Key("c-s"), rspec="save"),
-        'shock [<nnavi50>]':
+        '(shock|Shaw|show) [<nnavi50>]':
             R(Key("enter"), rspec="shock")*Repeat(extra="nnavi50"),
         # "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
         #     R(Function(text_utils.master_text_nav)), # this is now implemented below
         "shift click":
             R(Key("shift:down") + Mouse("left") + Key("shift:up")),
-        "stoosh [<nnavi500>]":
-            R(Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS), rspec="stoosh"),
+        "copy [<nnavi500>]":
+            R(Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS), rspec="copy"),
         "cut [<nnavi500>]":
             R(Function(navigation.cut_keep_clipboard, nexus=_NEXUS), rspec="cut"),
-        "spark [<nnavi500>] [(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)]]":
-            R(Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="spark"),
-        "splat [<splatdir>] [<nnavi10>]":
+        "blank above [<nnavi50>]":
+            R(Key("left, right, end, home, enter:%(nnavi50)d, up"), rspec="blank above"),
+        "blank below [<nnavi50>]":
+            R(Key("right, left, end, enter:%(nnavi50)d"), rspec="blank above"),
+        "paste above":
+            R(Key("left, right, end, home, enter, up, end") +
+              Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="paste above"),
+        "paste below [<below_left>]":
+            R(Key("right, left, end, enter, s-tab:%(below_left)d") +
+              Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="paste below"),
+        "paste [<nnavi500>] [(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)]]":
+            R(Function(navigation.drop_keep_clipboard, nexus=_NEXUS), rspec="paste"),
+        #"splat [<splatdir>] [<nnavi10>]":
+        "slap [<splatdir>] [<nnavi10>]":
             R(Key("c-%(splatdir)s"), rspec="splat")*Repeat(extra="nnavi10"),
+        "nuke [<nnavi10>]":
+            R(Key("end, s-home/5, s-home/5, backspace, del"))*Repeat(extra="nnavi10"),
         "deli [<nnavi50>]":
             R(Key("del/5"), rspec="deli")*Repeat(extra="nnavi50"),
-        "clear [<nnavi50>]":
-            R(Key("backspace/5:%(nnavi50)d"), rspec="clear"),
+        #"clear [<nnavi50>]":
+		"becky [<nnavi50>]":
+            R(Key("backspace/5:%(nnavi50)d"), rspec="back"),
         SymbolSpecs.CANCEL:
             R(Key("escape"), rspec="cancel"),
+        "chain":
+            R(Key("c-left, cs-right"), rspec="chain"),
         "shackle":
-            R(Key("home/5, s-end"), rspec="shackle"),
-        "(tell | tau) <semi>":
-            R(Function(navigation.next_line), rspec="tell dock"),
+            R(Key("end, s-home"), rspec="shackle"),
+        #"(tell | tau) <semi>":
+        #    R(Function(navigation.next_line), rspec="tell dock"),
         "duple [<nnavi50>]":
             R(Function(navigation.duple_keep_clipboard), rspec="duple"),
         "Kraken":
             R(Key("c-space"), rspec="Kraken"),
-        "undo [<nnavi10>]":
+        "(undo|negate) [<nnavi10>]":
             R(Key("c-z"))*Repeat(extra="nnavi10"),
         "redo [<nnavi10>]":
             R(
@@ -258,8 +376,11 @@ class Navigation(MergeRule):
             R(Function(textformat.clear_text_format)),
         "peek [<big>] format":
             R(Function(textformat.peek_text_format)),
-        "(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)] <textnv> [brunt]":
-            R(Function(textformat.master_format_text)),
+        # moved to a separate rule below
+        #"(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)] <textnv> [brunt]":
+        #    R(Function(textformat.master_format_text)),
+        "convert format (<capitalization> <spacing> | <capitalization> | <spacing>)":
+            R(Function(textformat.convert_format)),
         "[<big>] format <textnv>":
             R(Function(textformat.prior_text_format)),
         "<word_limit> [<big>] format <textnv>":
@@ -271,39 +392,50 @@ class Navigation(MergeRule):
               rdescript="Core: switch to most recent Windows"),
 
         # Ccr Mouse Commands
-        "kick [<nnavi3>]":
+        "(kick|push) [<nnavi3>]":
+            R(Function(lex.follow_gaze, enable=False))+
             R(Function(navigation.left_click, nexus=_NEXUS))*Repeat(extra="nnavi3"),
         "psychic":
+            R(Function(lex.follow_gaze, enable=False))+
             R(Function(navigation.right_click, nexus=_NEXUS)),
-        "(kick double|double kick)":
+        "(kick double|double kick|double push)":
+            R(Function(lex.follow_gaze, enable=False))+
             R(Function(navigation.left_click, nexus=_NEXUS)*Repeat(2)),
         "squat":
-            R(Function(navigation.left_down, nexus=_NEXUS)),
+            R(Function(navigation.left_down, nexus=_NEXUS))+
+            R(Function(lex.unzoom)),
         "bench":
+            R(Function(lex.follow_gaze, enable=False))+
             R(Function(navigation.left_up, nexus=_NEXUS)),
 
         # keystroke commands
         "<direction> [<nnavi500>]":
             R(Key("%(direction)s")*Repeat(extra='nnavi500'), rdescript="arrow keys"),
-        "(lease wally | latch) [<nnavi10>]":
+        #"(lease wally | latch) [<nnavi10>]":
+		"(home | latch) [<nnavi10>]":
             R(Key("home:%(nnavi10)s")),
-        "(ross wally | ratch) [<nnavi10>]":
+        #"(ross wally | ratch) [<nnavi10>]":
+		"(end | and | ratch) [<nnavi10>]":
             R(Key("end:%(nnavi10)s")),
+		"whoops [<nnavi10>]":
+			R(Key("s-home, s-home, s-up:%(nnavi10)s")),
+		"dupes [<nnavi10>]":
+			R(Key("s-end, s-down:%(nnavi10)s, s-end")),
         "sauce wally [<nnavi10>]":
             R(Key("c-home:%(nnavi10)s")),
         "dunce wally [<nnavi10>]":
             R(Key("c-end:%(nnavi10)s")),
-        "bird [<nnavi500>]":
+        "loom [<nnavi500>]":
             R(Key("c-left:%(nnavi500)s")),
-        "firch [<nnavi500>]":
+        "rush [<nnavi500>]":
             R(Key("c-right:%(nnavi500)s")),
-        "brick [<nnavi500>]":
-            R(Key("s-left:%(nnavi500)s")),
-        "frick [<nnavi500>]":
-            R(Key("s-right:%(nnavi500)s")),
-        "blitch [<nnavi500>]":
+        #"lease [<nnavi500>]":
+            #R(Key("s-left:%(nnavi500)s")),
+        #"ross [<nnavi500>]":
+            #R(Key("s-right:%(nnavi500)s")),
+        "(lick | leak) [<nnavi500>]":
             R(Key("cs-left:%(nnavi500)s")),
-        "flitch [<nnavi500>]":
+        "rock [<nnavi500>]":
             R(Key("cs-right:%(nnavi500)s")),
         "<modifier> <button_dictionary_500> [<nnavi500>]":
             R(Key("%(modifier)s%(button_dictionary_500)s")*Repeat(extra='nnavi500'),
@@ -376,7 +508,8 @@ class Navigation(MergeRule):
         combined_button_dictionary.update(dictionary)
 
     modifier_choice_object = Choice("modifier", {
-            "(control | fly)": "c-", #TODO: make DRY
+            #"(control | fly)": "c-", #TODO: make DRY
+            "control": "c-",
             "(shift | shin)": "s-",
             "alt": "a-",
             "(control shift | que)": "cs-",
@@ -402,10 +535,16 @@ class Navigation(MergeRule):
         Dictation("textnv"),
         Choice("enclosure", double_text_punc_dict),
         Choice("direction", {
-            "dunce": "down",
-            "sauce": "up",
+            #"dunce": "down",
+            #"sauce": "up",
+            "duck|doc|dog": "down",
+            "neck|Nick": "up",
             "lease": "left",
             "ross": "right",
+            #"down": "down",
+            #"up": "up",
+            #"left": "left",
+            #"right": "right",
         }),
         modifier_choice_object,
         Choice("button_dictionary_1", button_dictionary_1),
@@ -413,24 +552,8 @@ class Navigation(MergeRule):
         Choice("button_dictionary_500", button_dictionary_500),
         Choice("combined_button_dictionary", combined_button_dictionary),
 
-        Choice("capitalization", {
-            "yell": 1,
-            "tie": 2,
-            "Gerrish": 3,
-            "sing": 4,
-            "laws": 5
-        }),
-        Choice(
-            "spacing", {
-                "gum": 1,
-                "gun": 1,
-                "spine": 2,
-                "snake": 3,
-                "pebble": 4,
-                "incline": 5,
-                "dissent": 6,
-                "descent": 6
-            }),
+        Choice("capitalization", capitalization_dict),
+        Choice("spacing", spacing_dict),
         Choice("semi", tell_commands_dict),
         Choice("word_limit", {
             "single": 1,
@@ -455,6 +578,9 @@ class Navigation(MergeRule):
             "lease": "backspace",
             "ross": "delete",
         }),
+        Choice("below_left", {
+            "left": 1,
+        })
     ]
 
     defaults = {
@@ -471,7 +597,41 @@ class Navigation(MergeRule):
         "big": False,
         "splatdir": "backspace",
         "modifier": "",
+        "below_left": 0,
     }
 
-
+	
 control.global_rule(Navigation())
+
+class Reuse(MappingRule):
+    mapping = {
+        "(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)] <textnv>":
+            R(Function(textformat.master_format_text)),
+        #"reuse <textnv>":
+        #    R(Function(textformat.master_format_text, spacing="snake", capitalization="laws")),
+    }
+    
+    extras = [
+        Dictation("textnv"),
+        Choice("capitalization", capitalization_dict),
+        Choice("spacing", spacing_dict),
+    ]
+    defaults = {
+        "capitalization": 0,
+        "spacing": 0,
+    }
+    
+class JustDictation(MappingRule):
+    mapping = {
+        "say <text>":
+            R(Text("%(text)s")),
+    }
+    
+    extras = [
+        Dictation("text"),
+    ]
+    
+grammar = Grammar("EveryUseGrammar")
+grammar.add_rule(Reuse())
+grammar.add_rule(JustDictation())
+grammar.load()

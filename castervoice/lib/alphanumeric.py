@@ -5,23 +5,30 @@ from castervoice.lib.actions import Key, Text
 
 
 caster_alphabet = {
-            "arch"    : "a",
-            "brov"    : "b",
-            "char"    : "c",
+            #"arch"    : "a", # too short, similar to a lot of things
+            "alfa"   : "a",
+            "ulfa"   : "a",
+            #"brov"    : "b", # too short, similar to a lot of things
+            "bravo"    : "b",
+            #"char"    : "c", # too short, similar to a lot of things
+            "Charlie"    : "c",
             "delta"   : "d",
             "echo"    : "e",
             "foxy"    : "f",
             "goof"    : "g",
             "hotel"   : "h",
             "India"   : "i",
+            "endia"   : "i",
             "julia"   : "j",
             "kilo"    : "k",
             "Lima"    : "l",
             "Mike"    : "m",
-            "Novakeen": "n",
+            #"Novakeen": "n",
+            "November": "n",
             "oscar"   : "o",
             "prime"   : "p",
-            "Quebec"  : "q",
+            #"Quebec"  : "q", #too much like "go back"
+            "quantum"  : "q",
             "Romeo"   : "r",
             "Sierra"  : "s",
             "tango"   : "t",
@@ -32,6 +39,8 @@ caster_alphabet = {
             "yankee"  : "y",
             "Zulu"    : "z",
         }
+        
+lock_caps = False
 
 def get_alphabet_choice(spec):
     return Choice(spec, caster_alphabet)
@@ -90,9 +99,17 @@ def letters(big, dict1, dict2, letter):
     if d2 != "":
         Text(d2).execute()
 
-
+def set_lock_caps():
+    global lock_caps
+    lock_caps = True
+    
+def set_unlock_caps():
+    global lock_caps
+    lock_caps = False
+    
 def letters2(big, letter):
-    if big:
+    global lock_caps
+    if big or lock_caps:
         Key(letter.capitalize()).execute()
     else:
         Key(letter).execute()

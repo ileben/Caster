@@ -150,11 +150,21 @@ def drop_keep_clipboard(nnavi500, nexus, capitalization, spacing):
 
 def duple_keep_clipboard(nnavi50):
     cb = Clipboard(from_system=True)
+    
+    safe_word = "<_error_>"
+    Clipboard.set_system_text(safe_word)
+    
     Key("escape, home, s-end, c-c, end").execute()
     time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
     for i in range(0, nnavi50):
         Key("enter, c-v").execute()
         time.sleep(settings.SETTINGS["miscellaneous"]["keypress_wait"]/1000.)
+        
+    for i in range(0, 20):
+        content = Clipboard.get_system_text()
+        if not content == safe_word:
+            break
+     
     cb.copy_to_system()
 
 
@@ -200,25 +210,50 @@ def wheel_scroll(direction, nnavi500):
         time.sleep(0.1)
 
 
-def curse(direction, direction2, nnavi500, dokick):
+def curse(x10, y10, dokick):
     x, y = 0, 0
-    d = str(direction)
-    d2 = str(direction2)
-    if d == "up" or d2 == "up":
-        y = -nnavi500
-    if d == "down" or d2 == "down":
-        y = nnavi500
-    if d == "left" or d2 == "left":
-        x = -nnavi500
-    if d == "right" or d2 == "right":
-        x = nnavi500
-
-    Mouse("<" + str(x) + ", " + str(y) + ">").execute()
+    r = monitors[0].rectangle
+    sx = (r.dx - r.x)/10
+    sy = (r.dy - r.y)/10
+    x = int(sx/2 + (x10-1)*sx)
+    y = int(sy/2 + (y10-1)*sy)
+    #bbox = [
+        #int(r.x),
+        #int(r.y),
+        #int(r.x) + int(r.dx) - 1,
+        #int(r.y) + int(r.dy) - 1
+    #]
+    #Mouse("<" + str(x) + ", " + str(y) + ">").execute()
+    Mouse("[" + str(int(x)) + ", " + str(int(y)) + "]").execute()
+    
+    print("x{} y{} rx{} ry{}".format(r.x, r.y, r.dx, r.dy))
+    print("x{} y{}".format(x, y))
     if int(dokick) != 0:
         if int(dokick) == 1:
             left_click(control.nexus())
         elif int(dokick) == 2:
             right_click(control.nexus())
+
+#def curse(direction, direction2, nnavi500, dokick):
+    #x, y = 0, 0
+    #d = str(direction)
+    #d2 = str(direction2)
+    #if d == "up" or d2 == "up":
+        #y = -nnavi500
+    #if d == "down" or d2 == "down":
+        #y = nnavi500
+    #if d == "left" or d2 == "left":
+        #x = -nnavi500
+    #if d == "right" or d2 == "right":
+        #x = nnavi500
+#
+    #Mouse("<" + str(x) + ", " + str(y) + ">").execute()
+    #if int(dokick) != 0:
+        #if int(dokick) == 1:
+            #left_click(control.nexus())
+        #elif int(dokick) == 2:
+            #right_click(control.nexus())
+
 
 
 def next_line(semi):

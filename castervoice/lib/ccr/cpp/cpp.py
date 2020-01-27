@@ -9,10 +9,13 @@ class CPP(MergeRule):
     pronunciation = "C plus plus"
 
     mapping = {
+        "new scope":
+            R(Key("leftbrace, enter, rightbrace, up, enter")),
         SymbolSpecs.IF:
-            R(Key("i, f, lparen, rparen, leftbrace, enter,up,left")),
+            #R(Key("i, f, space, lparen, rparen, enter, leftbrace, enter, rightbrace, left, up:3, right:4")),
+            R(Key("i, f, space, lparen, rparen, left")),
         SymbolSpecs.ELSE:
-            R(Key("e, l, s, e, leftbrace, enter")),
+            R(Key("e, l, s, e, enter, leftbrace, enter, enter, rightbrace, left, up, tab")),
         #
         SymbolSpecs.SWITCH:
             R(Text("switch(){\ncase : break;\ndefault: break;") + Key("up,up,left,left")),
@@ -28,9 +31,9 @@ class CPP(MergeRule):
         SymbolSpecs.WHILE_LOOP:
             R(Text("while ()") + Key("left")),
         SymbolSpecs.FOR_LOOP:
-            R(Text("for (int i=0; i<TOKEN; i++)")),
+			R(Text("for (; TOKEN; TOKEN)") + Key("home, right:5")),
         SymbolSpecs.FOR_EACH_LOOP:
-            R(Text("for_each (TOKEN, TOKEN, TOKEN);")),
+            R(Text("for ( : TOKEN);") + Key("home, right:5")),
         #
         SymbolSpecs.TO_INTEGER:
             R(Text("(int)")),
@@ -61,6 +64,12 @@ class CPP(MergeRule):
             R(Text("//")),
         SymbolSpecs.LONG_COMMENT:
             R(Text("/**/") + Key("left, left")),
+        (SymbolSpecs.COMMENT_OUT + " [<nnavi50>]"):
+            R((Key("end") + Key("home") + Text("//") + Key("down"))*Repeat(extra="nnavi50"), rspec="comment out"),
+        (SymbolSpecs.REMOVE_COMMENT + " [<nnavi50>]"):
+            R((Key("end") + Key("home, delete, delete") + Key("down"))*Repeat(extra="nnavi50"), rspec="remove comment"),
+        "alter line":
+            R(Mimic("duple") + Key("up, home") + Text("//") + Key("down, home")),
         #
         SymbolSpecs.NULL:
             R(Text("null")),
@@ -88,28 +97,30 @@ class CPP(MergeRule):
             R(Text("static_cast<double>()") + Key("left")),
         "([global] scope | name)":
             R(Text("::")),
-        "Vic":
-            R(Text("vector")),
+        #"Vic":
+        #    R(Text("vector")),
         "pushback":
             R(Text("push_back")),
         "standard":
             R(Text("std")),
         "constant":
             R(Text("const")),
-        "array":
-            R(Mimic("brackets")),
+        #"array":
+        #    R(Mimic("brackets")),
 
         #http://www.learncpp.com/cpp-tutorial/67-introduction-to-pointers/
         "(reference to | address of)":
             R(Text("&")),
         "(pointer | D reference)":
             R(Text("*")),
-        "member":
+        "(member | arrow)":
             R(Text("->")),
         "new new":
             R(Text("new ")),
         "integer":
             R(Text("int ")),
+        "float":
+            R(Text("float ")),
         "double":
             R(Text("double ")),
         "character":
@@ -122,7 +133,9 @@ class CPP(MergeRule):
             R(Text("()?;") + (Key("left")*3)),
     }
 
-    extras = []
+    extras = [
+        IntegerRefST("nnavi50", 1, 50),
+    ]
     defaults = {}
 
 

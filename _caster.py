@@ -92,26 +92,26 @@ class MainRule(MergeRule):
 
     mapping = {
         # update management
-        "update caster":
-            R(DependencyUpdate([pip, "install", "--upgrade", "caster voice"])),
-        "update dragonfly":
-            R(DependencyUpdate([pip, "install", "--upgrade", "dragonfly2"])),
+        #"update caster":
+            #R(DependencyUpdate([pip, "install", "--upgrade", "caster voice"])),
+        #"update dragonfly":
+            #R(DependencyUpdate([pip, "install", "--upgrade", "dragonfly2"])),
 
         # hardware management
-        "volume <volume_mode> [<n>]":
-            R(Function(navigation.volume_control, extra={'n', 'volume_mode'})),
-        "change monitor":
-            R(Key("w-p") + Pause("100") + Function(change_monitor)),
+        #"volume <volume_mode> [<n>]":
+            #R(Function(navigation.volume_control, extra={'n', 'volume_mode'})),
+        #"change monitor":
+            #R(Key("w-p") + Pause("100") + Function(change_monitor)),
 
         # passwords
 
         # mouse alternatives
-        "legion [<monitor>]":
-            R(Function(navigation.mouse_alternates, mode="legion", nexus=_NEXUS)),
-        "rainbow [<monitor>]":
-            R(Function(navigation.mouse_alternates, mode="rainbow", nexus=_NEXUS)),
-        "douglas [<monitor>]":
-            R(Function(navigation.mouse_alternates, mode="douglas", nexus=_NEXUS)),
+        #"legion [<monitor>]":
+            #R(Function(navigation.mouse_alternates, mode="legion", nexus=_NEXUS)),
+        #"rainbow [<monitor>]":
+            #R(Function(navigation.mouse_alternates, mode="rainbow", nexus=_NEXUS)),
+        #"douglas [<monitor>]":
+            #R(Function(navigation.mouse_alternates, mode="douglas", nexus=_NEXUS)),
 
         # ccr de/activation
         "<enable> <name>":

@@ -25,6 +25,16 @@ class VisualStudioRule(MergeRule):
             R(Key("c-q")),
         "go to line":
             R(Key("c-g")),
+        "go back":
+            R(Key("c--")),
+        "go forward":
+            R(Key("cs--")),
+        "find file":
+            R(Key("as-o")),
+        "find symbol":
+            R(Key("a-g")),
+        "toggle header":
+            R(Key("a-o")),
         "comment line":
             R(Key("c-k, c-c")),
         "comment block":
@@ -55,8 +65,15 @@ class VisualStudioRule(MergeRule):
             R(Key("f11")),
         "step out [of]":
             R(Key("s-f11")),
-        "resume":
+        #"resume":
+        "run app|resume app":
             R(Key("f5")),
+        "stop running":
+            R(Key("s-f5")),
+        "build app":
+            R(Key("f7")),
+        "build file":
+            R(Key("c-f7")),
         "run tests":
             R(Key("c-r, t")),
         "run all tests":

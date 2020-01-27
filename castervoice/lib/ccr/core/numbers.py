@@ -5,16 +5,25 @@ class Numbers(MergeRule):
     mapping = {
         "word number <wn>":
             R(Function(alphanumeric.word_number, extra="wn")),
-        "numb <wnKK>":
+        "numb [<multiplier>] <wnKK>":
             R(Function(alphanumeric.numbers2, extra="wnKK"),
-              rspec="Number"),
+              rspec="Number")*Repeat(extra="multiplier"),
+        "hexa":
+            R(Text("0x"))
     }
-
+    
     extras = [
         IntegerRefST("wn", 0, 10),
         IntegerRefST("wnKK", 0, 1000000),
+        Choice("multiplier", {
+            "single": 1,
+            "double": 2,
+            "triple": 3,
+            "Quadra": 4
+        }),
     ]
-    defaults = {}
-
+    defaults = {
+        "multiplier": 1,
+    }
 
 control.global_rule(Numbers())

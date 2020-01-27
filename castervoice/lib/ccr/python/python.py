@@ -52,7 +52,7 @@ class Python(MergeRule):
         SymbolSpecs.OR:
             R(Text(" or ")),
         SymbolSpecs.NOT:
-            R(Text("!")),
+            R(Text(" not ")),
         SymbolSpecs.SYSOUT:
             R(Store() + Text("print()") + Key("left") + Retrieve(action_if_text="right")),
         SymbolSpecs.IMPORT:
@@ -67,6 +67,11 @@ class Python(MergeRule):
         SymbolSpecs.LONG_COMMENT:
             R(Store() + Text("''''''") + Key("left:3") +
               Retrieve(action_if_text="right:3")),
+        (SymbolSpecs.COMMENT_OUT + " [<nnavi50>]"):
+            R((Key("end") + Key("home") + Text("#") + Key("down"))*Repeat(extra="nnavi50"), rspec="comment out"),
+        "alter line":
+            R(Mimic("duple") + Key("up, home") + Text("#") + Key("down, home")),
+        
         SymbolSpecs.NULL:
             R(Text("None")),
         SymbolSpecs.RETURN:
@@ -131,9 +136,9 @@ class Python(MergeRule):
         "sub class":
             R(Store() + Text("class ():") + Key("left:3") +
               Retrieve(action_if_text="right:3")),
-        "dunder":
-            R(Store() + Text("____()") + Key("left:4") +
-              Retrieve(action_if_text="right:4")),
+        #"dunder":
+        #    R(Store() + Text("____()") + Key("left:4") +
+        #      Retrieve(action_if_text="right:4")),
         "init":
             R(Store() + Text("__init__()") + Key("left") +
               Retrieve(action_if_text="right")),
@@ -141,10 +146,13 @@ class Python(MergeRule):
             R(Text("__%(binary_meth)s__(self, other):")),
         "meth [<unary_meth>]":
             R(Text("__%(unary_meth)s__(self):")),
+        "ternary":
+            R(Text(" if TOKEN else TOKEN")),
     }
 
     extras = [
         Dictation("text"),
+        IntegerRefST("nnavi50", 1, 50),
         Choice("unary_meth", {
             "reper": "reper",
             "stir": "str",
@@ -184,7 +192,7 @@ class Python(MergeRule):
                 "not implemented": "NotImplementedError",
             })
     ]
-    defaults = {"unary_meth": "", "binary_meth": "", "exception": ""}
+    defaults = {"nnavi50": 1, "unary_meth": "", "binary_meth": "", "exception": ""}
 
 
 control.global_rule(Python(ID=100))

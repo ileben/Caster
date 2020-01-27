@@ -19,6 +19,8 @@ class NPPRule(MergeRule):
             R(Key("c-o")),
         "go [to] line <n>":
             R(Key("c-g/10") + Text("%(n)s") + Key("enter")),
+        "new tab":
+            R(Key("c-n")),
     }
     extras = [
         Dictation("text"),
