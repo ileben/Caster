@@ -136,6 +136,8 @@ class NavigationNon(MergeRule):
         "(next | prior) window":
             R(Key("ca-tab, enter")),
         #"switch [window | windows]":
+        "altar|alter":
+            R(Key("a-tab")),
         "Wendy|windy":
             R(Key("ca-tab"))*Repeat(extra="n"),
         "next tab [<n>]":

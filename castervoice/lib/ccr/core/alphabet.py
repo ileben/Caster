@@ -21,4 +21,4 @@ class Alphabet(MergeRule):
         "big": False,
     }
 
-control.global_rule(Alphabet())
+#control.global_rule(Alphabet())

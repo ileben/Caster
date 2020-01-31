@@ -5,6 +5,12 @@ class AndroidStudioRule(MergeRule):
     pronunciation = "android studio"
 
     mapping = {
+        "next tab [<n>]":
+            R(Key("sa-right"))*Repeat(extra="n"),
+        "prior tab [<n>]":
+            R(Key("sa-left"))*Repeat(extra="n"),
+        "find file":
+            R(Key("cs-N")),
         "run app|resume app":
             R(Key("s-f10")),
         "stop running":
