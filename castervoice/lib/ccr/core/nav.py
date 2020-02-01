@@ -140,9 +140,11 @@ class NavigationNon(MergeRule):
             R(Key("alt:down, tab/20:%(nnavi10)d, alt:up"), rdescript="Core: switch to most recent Windows"),
         "Wendy|windy":
             R(Key("ca-tab"))*Repeat(extra="n"),
-        "next tab [<n>]":
+        #"next tab [<n>]":
+        "nexxy [<n>]":
             R(Key("c-pgdown"))*Repeat(extra="n"),
-        "prior tab [<n>]":
+        #"prior tab [<n>]":
+        "proxy [<n>]":
             R(Key("c-pgup"))*Repeat(extra="n"),
         "close tab [<n>]":
             R(Key("c-w/20"))*Repeat(extra="n"),
@@ -329,6 +331,8 @@ class Navigation(MergeRule):
             R(Function(navigation.stoosh_keep_clipboard, nexus=_NEXUS), rspec="copy"),
         "cut [<nnavi500>]":
             R(Function(navigation.cut_keep_clipboard, nexus=_NEXUS), rspec="cut"),
+        "cut line":
+            R(Key("end, s-home/5, c-x/5, s-home/5, backspace, backspace")),
         "blank above [<nnavi50>]":
             R(Key("left, right, end, home") + Key("enter, up")*Repeat(extra="nnavi50"), rspec="blank above"),
         "blank below [<nnavi50>]":
@@ -346,6 +350,8 @@ class Navigation(MergeRule):
             R(Key("c-%(splatdir)s"), rspec="splat")*Repeat(extra="nnavi10"),
         "nuke line [<nnavi10>]":
             R(Key("end, s-home/5, s-home/5, backspace, del"))*Repeat(extra="nnavi10"),
+        "nuke empty [<nnavi10>]":
+            R(Key("s-home/5, backspace, del, end"))*Repeat(extra="nnavi10"),
         "deli [<nnavi50>]":
             R(Key("del/5"), rspec="deli")*Repeat(extra="nnavi50"),
         #"clear [<nnavi50>]":

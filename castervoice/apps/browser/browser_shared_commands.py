@@ -25,7 +25,7 @@ class BrowserSharedCommands(MergeRule):
         browser.REOPEN_TAB_N_TIMES:
             R(Key("cs-t")) * Repeat(extra="n"),
         browser.CLOSE_TAB_N_TIMES:
-            R(Key("c-w")) * Repeat(extra='n'),
+            R(Key("c-w/10")) * Repeat(extra='n'),
         browser.CLOSE_WINDOW:
             R(Key("cs-w")),
         browser.NEXT_TAB_N_TIMES:

@@ -5,9 +5,11 @@ class VisualStudioRule(MergeRule):
     pronunciation = "visual studio"
 
     mapping = {
-        "next tab [<n>]":
+        #"next tab [<n>]":
+        "nexxy [<n>]":
             R(Key("ca-pgdown"))*Repeat(extra="n"),
-        "prior tab [<n>]":
+        #"prior tab [<n>]":
+        "proxy [<n>]":
             R(Key("ca-pgup"))*Repeat(extra="n"),
         "close tab [<n>]":
             R(Key("c-f4/20"))*Repeat(extra="n"),
