@@ -33,13 +33,14 @@ class Python(MergeRule):
         SymbolSpecs.BREAK:
             R(Text("break")),
         SymbolSpecs.FOR_EACH_LOOP:
-            R(Store() + Text("for  in :") + Key("left:5") +
-              Retrieve(action_if_text="right:5")),
+            #R(Store() + Text("for  in :") + Key("left:5") + Retrieve(action_if_text="right:5")),
+            R(Text("for  in TOKEN:") + Key("left:10")),
         SymbolSpecs.FOR_LOOP:
-            R(Store() + Text("for i in range(0, ):") + Key("left:2") +
-              Retrieve(action_if_text="right:2")),
+            #R(Store() + Text("for i in range(0, ):") + Key("left:2") + Retrieve(action_if_text="right:2")),
+            R(Text("for  in range(0, TOKEN):") + Key("left:20")),
         SymbolSpecs.WHILE_LOOP:
-            R(Store() + Text("while :") + Key("left") + Retrieve(action_if_text="right")),
+            #R(Store() + Text("while :") + Key("left") + Retrieve(action_if_text="right")),
+            R(Text("while :") + Key("left")),
         # (no do-while in Python)
         SymbolSpecs.TO_INTEGER:
             R(Store() + Text("int()") + Key("left") + Retrieve(action_if_text="right")),
@@ -52,23 +53,27 @@ class Python(MergeRule):
         SymbolSpecs.OR:
             R(Text(" or ")),
         SymbolSpecs.NOT:
-            R(Text(" not ")),
+            R(Text("not ")),
         SymbolSpecs.SYSOUT:
             R(Store() + Text("print()") + Key("left") + Retrieve(action_if_text="right")),
         SymbolSpecs.IMPORT:
             R(Text("import ")),
         SymbolSpecs.FUNCTION:
-            R(Store() + Text("def ():") + Key("left:3") +
-              Retrieve(action_if_text="right:3")),
+            #R(Store() + Text("def ():") + Key("left:3") + Retrieve(action_if_text="right:3")),
+            R(Text("def ():") + Key("left:3")),
         SymbolSpecs.CLASS:
-            R(Store() + Text("class :") + Key("left") + Retrieve(action_if_text="right")),
+            #R(Store() + Text("class :") + Key("left") + Retrieve(action_if_text="right")),
+            R(Text("class :") + Key("left")),
         SymbolSpecs.COMMENT:
-            R(Store() + Text("#") + Key("space") + Retrieve(action_if_text="right")),
+            #R(Store() + Text("#") + Key("space") + Retrieve(action_if_text="right")),
+            R(Text("#") + Key("space")),
         SymbolSpecs.LONG_COMMENT:
-            R(Store() + Text("''''''") + Key("left:3") +
-              Retrieve(action_if_text="right:3")),
+            #R(Store() + Text("''''''") + Key("left:3") + Retrieve(action_if_text="right:3")),
+            R(Text("''''''") + Key("left:3")),
         (SymbolSpecs.COMMENT_OUT + " [<nnavi50>]"):
             R((Key("end") + Key("home") + Text("#") + Key("down"))*Repeat(extra="nnavi50"), rspec="comment out"),
+        (SymbolSpecs.REMOVE_COMMENT + " [<nnavi50>]"):
+            R((Key("end") + Key("home, delete") + Key("down"))*Repeat(extra="nnavi50"), rspec="remove comment"),
         "alter line":
             R(Mimic("duple") + Key("up, home") + Text("#") + Key("down, home")),
         

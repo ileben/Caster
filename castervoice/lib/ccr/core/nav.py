@@ -136,8 +136,8 @@ class NavigationNon(MergeRule):
         "(next | prior) window":
             R(Key("ca-tab, enter")),
         #"switch [window | windows]":
-        "altar|alter":
-            R(Key("a-tab")),
+        "altar|alter [<nnavi10>]":
+            R(Key("alt:down, tab/20:%(nnavi10)d, alt:up"), rdescript="Core: switch to most recent Windows"),
         "Wendy|windy":
             R(Key("ca-tab"))*Repeat(extra="n"),
         "next tab [<n>]":
@@ -174,6 +174,7 @@ class NavigationNon(MergeRule):
         Dictation("text"),
         Dictation("mim"),
         IntegerRefST("n", 1, 50),
+        IntegerRefST("nnavi10", 1, 11),
         IntegerRefST("nnavi500", 1, 500),
         Choice("time_in_seconds", {
             "super slow": 5,
@@ -197,6 +198,7 @@ class NavigationNon(MergeRule):
     defaults = {
         "n": 1,
         "mim": "",
+        "nnavi10": 1,
         "nnavi500": 1,
         "direction2": "",
         "dokick": 0,
@@ -328,7 +330,7 @@ class Navigation(MergeRule):
         "cut [<nnavi500>]":
             R(Function(navigation.cut_keep_clipboard, nexus=_NEXUS), rspec="cut"),
         "blank above [<nnavi50>]":
-            R(Key("left, right, end, home, enter:%(nnavi50)d, up"), rspec="blank above"),
+            R(Key("left, right, end, home") + Key("enter, up")*Repeat(extra="nnavi50"), rspec="blank above"),
         "blank below [<nnavi50>]":
             R(Key("right, left, end, enter:%(nnavi50)d"), rspec="blank above"),
         "paste above":
@@ -342,7 +344,7 @@ class Navigation(MergeRule):
         #"splat [<splatdir>] [<nnavi10>]":
         "slap [<splatdir>] [<nnavi10>]":
             R(Key("c-%(splatdir)s"), rspec="splat")*Repeat(extra="nnavi10"),
-        "nuke [<nnavi10>]":
+        "nuke line [<nnavi10>]":
             R(Key("end, s-home/5, s-home/5, backspace, del"))*Repeat(extra="nnavi10"),
         "deli [<nnavi50>]":
             R(Key("del/5"), rspec="deli")*Repeat(extra="nnavi50"),
@@ -372,26 +374,23 @@ class Navigation(MergeRule):
                               ])),
 
         # text formatting
-        "set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)]":
-            R(Function(textformat.set_text_format)),
-        "clear castervoice [<big>] formatting":
-            R(Function(textformat.clear_text_format)),
-        "peek [<big>] format":
-            R(Function(textformat.peek_text_format)),
+        #"set [<big>] format (<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)]":
+            #R(Function(textformat.set_text_format)),
+        #"clear castervoice [<big>] formatting":
+            #R(Function(textformat.clear_text_format)),
+        #"peek [<big>] format":
+            #R(Function(textformat.peek_text_format)),
         # moved to a separate rule below
         #"(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)] <textnv> [brunt]":
         #    R(Function(textformat.master_format_text)),
         "convert format (<capitalization> <spacing> | <capitalization> | <spacing>)":
             R(Function(textformat.convert_format)),
-        "[<big>] format <textnv>":
-            R(Function(textformat.prior_text_format)),
-        "<word_limit> [<big>] format <textnv>":
-            R(Function(textformat.partial_format_text)),
+        #"[<big>] format <textnv>":
+            #R(Function(textformat.prior_text_format)),
+        #"<word_limit> [<big>] format <textnv>":
+            #R(Function(textformat.partial_format_text)),
         "hug <enclosure>":
             R(Function(text_utils.enclose_selected)),
-        "dredge [<nnavi10>]":
-            R(Key("alt:down, tab/20:%(nnavi10)d, alt:up"),
-              rdescript="Core: switch to most recent Windows"),
 
         # Ccr Mouse Commands
         "(kick|push) [<nnavi3>]":
@@ -413,20 +412,18 @@ class Navigation(MergeRule):
         # keystroke commands
         "<direction> [<nnavi500>]":
             R(Key("%(direction)s")*Repeat(extra='nnavi500'), rdescript="arrow keys"),
-        #"(lease wally | latch) [<nnavi10>]":
-		"(home | latch) [<nnavi10>]":
+		"home [<nnavi10>]":
             R(Key("home:%(nnavi10)s")),
-        #"(ross wally | ratch) [<nnavi10>]":
-		"(end | and | ratch) [<nnavi10>]":
+		"(end | and) [<nnavi10>]":
             R(Key("end:%(nnavi10)s")),
 		"whoops [<nnavi10>]":
 			R(Key("s-home, s-home, s-up:%(nnavi10)s")),
 		"dupes [<nnavi10>]":
 			R(Key("s-end, s-down:%(nnavi10)s, s-end")),
-        "sauce wally [<nnavi10>]":
-            R(Key("c-home:%(nnavi10)s")),
-        "dunce wally [<nnavi10>]":
-            R(Key("c-end:%(nnavi10)s")),
+        #"sauce wally [<nnavi10>]":
+            #R(Key("c-home:%(nnavi10)s")),
+        #"dunce wally [<nnavi10>]":
+            #R(Key("c-end:%(nnavi10)s")),
         "loom [<nnavi500>]":
             R(Key("c-left:%(nnavi500)s")),
         "rush [<nnavi500>]":

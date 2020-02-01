@@ -43,17 +43,18 @@ class CPP(MergeRule):
             R(Text("std::to_string()") + Key("left")),
         #
         SymbolSpecs.AND:
-            R(Text("&&")),
+            R(Text(" && ")),
         SymbolSpecs.OR:
-            R(Text("||")),
+            R(Text(" || ")),
         SymbolSpecs.NOT:
             R(Text("!")),
         #
         SymbolSpecs.SYSOUT:
             R(Text("cout <<")),
         #
-        SymbolSpecs.IMPORT:
-            R(Text("#include")),
+        #SymbolSpecs.IMPORT:
+        "include":
+            R(Text("#include ")),
         #
         SymbolSpecs.FUNCTION:
             R(Text("TOKEN TOKEN(){}") + Key("left")),
@@ -99,12 +100,12 @@ class CPP(MergeRule):
             R(Text("::")),
         #"Vic":
         #    R(Text("vector")),
-        "pushback":
-            R(Text("push_back")),
+        #"pushback":
+            #R(Text("push_back")),
         "standard":
             R(Text("std")),
         "constant":
-            R(Text("const")),
+            R(Text("const ")),
         #"array":
         #    R(Mimic("brackets")),
 
@@ -117,6 +118,10 @@ class CPP(MergeRule):
             R(Text("->")),
         "new new":
             R(Text("new ")),
+        "void":
+            R(Text("void ")),
+        "boolean":
+            R(Text("bool ")),
         "integer":
             R(Text("int ")),
         "float":
@@ -130,7 +135,7 @@ class CPP(MergeRule):
         "string":
             R(Text("string ")),
         "ternary":
-            R(Text("()?;") + (Key("left")*3)),
+            R(Text("() ? TOKEN : TOKEN;") + (Key("left")*17)),
     }
 
     extras = [
