@@ -20,7 +20,8 @@ double_text_punc_dict = {
 inv_dtpb = {v: k for k, v in double_text_punc_dict.iteritems()}
 
 text_punc_dict = {
-    "ace":                                                " ",
+    #"ace":                                                " ",
+    "space":                                              " ",
     "clamor":                                             "!",
     "chocky":                                            "\"",
     "hashy":                                              "#",
@@ -34,7 +35,8 @@ text_punc_dict = {
     "plus":                                               "+",
     "comma":                                              ",",
     "minus":                                              "-",
-    "period | dot":                                       ".",
+    #"period | dot":                                       ".",
+    "period":                                             ".",
     "slash":                                              "/",
     "deckle":                                             ":",
     "semper":                                             ";",

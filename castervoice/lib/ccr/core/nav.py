@@ -349,9 +349,17 @@ class Navigation(MergeRule):
         "slap [<splatdir>] [<nnavi10>]":
             R(Key("c-%(splatdir)s"), rspec="splat")*Repeat(extra="nnavi10"),
         "nuke line [<nnavi10>]":
-            R(Key("end, s-home/5, s-home/5, backspace, del"))*Repeat(extra="nnavi10"),
+            R(Key("end, s-home/5, s-home/5, del, del"))*Repeat(extra="nnavi10"),
+        "nuke above [<nnavi10>]":
+            R(Key("up, end, s-home/5, s-home/5, del, del, home"))*Repeat(extra="nnavi10"),
+        "nuke below [<nnavi10>]":
+            R(Key("down, end, s-home/5, s-home/5, backspace, backspace, home"))*Repeat(extra="nnavi10"),
         "nuke empty [<nnavi10>]":
-            R(Key("s-home/5, backspace, del, end"))*Repeat(extra="nnavi10"),
+            R(Key("s-home/5, del, del, end"))*Repeat(extra="nnavi10"),
+        "nuke empty above [<nnavi10>]":
+            R(Key("end, up, s-home/5, del, del, home"))*Repeat(extra="nnavi10"),
+        "nuke empty below [<nnavi10>]":
+            R(Key("end, down, s-home/5, backspace, backspace, home"))*Repeat(extra="nnavi10"),
         "deli [<nnavi50>]":
             R(Key("del/5"), rspec="deli")*Repeat(extra="nnavi50"),
         #"clear [<nnavi50>]":
