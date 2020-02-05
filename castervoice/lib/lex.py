@@ -93,7 +93,7 @@ def next_expression(async_state, nav_state, direction, count):
 try:
     d = ctypes.CDLL(r"I:\Projects\Code\Source\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
     #d = ctypes.CDLL(r"D:\MobileDevelopment\third_party\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
-    
+    d.Test2.restype = ctypes.c_char_p
     
     d.Initialize()
     i = d.Test()
@@ -118,6 +118,15 @@ def follow_gaze(enable):
         d.EnableFollowGaze()
     else:
         d.DisableFollowGaze()
+    
+def teleport_cursor():
+    global d
+    text = d.TeleportCursor()
+    
+def test2():
+    global d
+    text = d.Test2()
+    print("{}".format(text))
     
 def zoom():
     global d

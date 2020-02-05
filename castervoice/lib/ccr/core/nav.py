@@ -89,8 +89,10 @@ class NavigationNon(MergeRule):
         "scree <direction> [<nnavi500>]":
             R(Function(navigation.wheel_scroll)),
         "fly [<nnavi500>]":
+            R(Function(lex.follow_gaze, enable=False)) + 
             R(Function(navigation.wheel_scroll, direction="up")),
         "dive [<nnavi500>]":
+            R(Function(lex.follow_gaze, enable=False)) + 
             R(Function(navigation.wheel_scroll, direction="down")),
         "colic":
             R(Key("control:down") + Mouse("left") + Key("control:up")),
@@ -217,6 +219,8 @@ class Navigation(MergeRule):
         "test":
             #R(Function(context.test)),
             R(Function(lex.get_gaze_position)),
+        "testy testy":
+            R(Function(lex.test2)),
         "zoom in|zooming|enhance":
             R(Function(lex.zoom)),
         "follow gaze":
@@ -409,6 +413,9 @@ class Navigation(MergeRule):
         # Ccr Mouse Commands
         "(kick|push) [<nnavi3>]":
             R(Function(lex.follow_gaze, enable=False))+
+            R(Function(navigation.left_click, nexus=_NEXUS))*Repeat(extra="nnavi3"),
+        "(fly kick) [<nnavi3>]":
+            R(Function(lex.teleport_cursor))+
             R(Function(navigation.left_click, nexus=_NEXUS))*Repeat(extra="nnavi3"),
         "psychic":
             R(Function(lex.follow_gaze, enable=False))+

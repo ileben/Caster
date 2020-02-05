@@ -4,8 +4,12 @@ class IERule(MergeRule):
     pronunciation = "explorer"
 
     mapping = {
-        "address bar":
+        "edit address | address bar":
             R(Key("a-d")),
+        "copy address":
+            R(Key("a-d/20, c-c")),
+        "show menu":
+            R(Key("s-f10")),
         "new window":
             R(Key("c-n")),
         "new folder":
@@ -14,7 +18,7 @@ class IERule(MergeRule):
             R(Key("a-f, w, t")),
         "(show | file | folder) properties":
             R(Key("a-enter")),
-        "get up":
+        "folder up | get up":
             R(Key("a-up")),
         "get back":
             R(Key("a-left")),
