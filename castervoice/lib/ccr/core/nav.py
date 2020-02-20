@@ -74,7 +74,7 @@ class NavigationNon(MergeRule):
             R(Key("f6")),
         "(F nine | F9)":
             R(Key("f9")),
-        "[show] context menu":
+        "context menu":
             R(Key("s-f10")),
         "lean":
             R(Function(navigation.right_down, nexus=_NEXUS)),

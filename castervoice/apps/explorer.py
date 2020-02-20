@@ -8,8 +8,6 @@ class IERule(MergeRule):
             R(Key("a-d")),
         "copy address":
             R(Key("a-d/20, c-c")),
-        "show menu":
-            R(Key("s-f10")),
         "new window":
             R(Key("c-n")),
         "new folder":
