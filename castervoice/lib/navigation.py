@@ -192,7 +192,7 @@ def mouse_click(nexus, button):
     Mouse(button).execute()
 
 
-left_click = lambda nexus: mouse_click(nexus, "left")
+left_click = lambda nexus: mouse_click(nexus, "left:down/10, left:up")
 right_click = lambda nexus: mouse_click(nexus, "right")
 middle_click = lambda nexus: mouse_click(nexus, "middle")
 left_down = lambda nexus: mouse_click(nexus, "left:down")
