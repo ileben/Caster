@@ -126,7 +126,7 @@ class CPP(MergeRule):
             R(Text("int ")),
         "float":
             R(Text("float ")),
-        "double":
+        "double float":
             R(Text("double ")),
         "character":
             R(Text("char ")),
