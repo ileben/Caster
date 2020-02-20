@@ -123,6 +123,14 @@ def teleport_cursor():
     global d
     text = d.TeleportCursor()
     
+def strafe():
+    global d
+    d.Strafe()
+    
+def stop_moving():
+    global d
+    d.StopMoving()
+    
 def test2():
     global d
     text = d.Test2()

@@ -44,6 +44,10 @@ spacing_dict = {
         
 class NavigationNon(MergeRule):
     mapping = {
+        "strafe":
+            R(Function(lex.strafe)),
+        "stop moving":
+            R(Function(lex.stop_moving)),
         "new word <text>":
             R(Function(context.newWord)),
         "<direction> <time_in_seconds>":
