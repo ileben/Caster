@@ -13,6 +13,10 @@ class VisualStudioRule(MergeRule):
             R(Key("ca-pgup"))*Repeat(extra="n"),
         "close tab [<n>]":
             R(Key("c-f4/20"))*Repeat(extra="n"),
+        "pin tab":
+            R(Key("a-t")), # nonstandard key binding
+        "show in Explorer":
+            R(Key("a-e")), # nonstandard key binding
         "(list | show) documents":
             R(Key("a-w, w")),
         "[focus] document (window | pane)":

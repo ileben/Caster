@@ -62,9 +62,9 @@ class CPP(MergeRule):
             R(Text("class TOKEN{}") + Key("left")),
         #
         SymbolSpecs.COMMENT:
-            R(Text("//")),
+            R(Text("// ")),
         SymbolSpecs.LONG_COMMENT:
-            R(Text("/**/") + Key("left, left")),
+            R(Text("/*  */") + Key("left, left, left")),
         (SymbolSpecs.COMMENT_OUT + " [<nnavi50>]"):
             R((Key("end") + Key("home") + Text("//") + Key("down"))*Repeat(extra="nnavi50"), rspec="comment out"),
         (SymbolSpecs.REMOVE_COMMENT + " [<nnavi50>]"):

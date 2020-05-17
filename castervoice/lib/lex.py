@@ -2,6 +2,8 @@ from castervoice.lib import context
 from castervoice.lib.imports import *
 import ctypes
 import traceback
+import os
+import subprocess
 
 keyword = {
     'if' : 'IF',
@@ -91,9 +93,11 @@ def next_expression(async_state, nav_state, direction, count):
     r""
     
 try:
-    d = ctypes.CDLL(r"I:\Projects\Code\Source\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
-    #d = ctypes.CDLL(r"D:\MobileDevelopment\third_party\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
+    #d = ctypes.CDLL(r"I:\Projects\Code\Source\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
+    d = ctypes.CDLL(r"D:\MobileDevelopment\third_party\EyeTrackingHooks\Release\EyeTrackingCLR.dll")
     d.Test2.restype = ctypes.c_char_p
+    d.GetCurrentFile.restype = ctypes.c_char_p
+    d.GetCurrentFolder.restype = ctypes.c_char_p
     
     d.Initialize()
     i = d.Test()
@@ -136,6 +140,33 @@ def test2():
     text = d.Test2()
     print("{}".format(text))
     
+def get_current_file():
+    global d
+    text = d.GetCurrentFile()
+    print("Current file: {}".format(text))
+    return text
+    
+def get_current_folder():
+    global d
+    text = d.GetCurrentFolder()
+    print("Current folder: {}".format(text))
+    return text
+    
+def current_file_command(command, folder=False):
+    file = get_current_folder() if folder else get_current_file()
+    if len(file) > 0:
+        run_detached_process(command.format(file))
+        
+def current_folder_command(command):
+    file = get_current_folder()
+    if len(file) > 0:
+        run_detached_process(command.format(file))
+        
+def run_detached_process(command):
+    CREATE_NEW_PROCESS_GROUP = 0x00000200
+    DETACHED_PROCESS = 0x00000008
+    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
+        
 def zoom():
     global d
     d.Zoom()

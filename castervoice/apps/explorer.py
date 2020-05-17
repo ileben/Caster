@@ -1,4 +1,5 @@
 from castervoice.lib.imports import *
+from castervoice.lib import lex
 
 class IERule(MergeRule):
     pronunciation = "explorer"
@@ -32,11 +33,39 @@ class IERule(MergeRule):
             # once you've selected the relevant heading for sorting using the arrow keys, press enter
         "sort [headings]":
             R(Key("a-d, tab:4")),
-
+            
+        "(edit in|editing) notepad":
+            R(Function(lex.current_file_command, command=r"C:\Program Files\Notepad++\notepad++.exe {}")),
+            
+        "subversion [<folder>] difference":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:diff /path:{}")),
+        "subversion [<folder>] log":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:log /path:{}")),
+        "subversion [<folder>] blame":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:blame /path:{}")),
+        "subversion [<folder>] browser":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:repobrowser /path:{}")),
+        "subversion [<folder>] properties":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:properties /path:{}")),
+        "subversion [<folder>] commit":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:commit /path:{}")),
+        "subversion [<folder>] revert":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:revert /path:{}")),
+        "subversion [<folder>] update":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:update /path:{}")),
+        "subversion [<folder>] add":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:add /path:{}")),
+        "subversion [<folder>] delete":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:remove /path:{}")),
+        "subversion [<folder>] rename":
+            R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:rename /path:{}")),
     }
     extras = [
         Dictation("text"),
         IntegerRefST("n", 1, 1000),
+        Choice("folder", {
+            "folder": True,
+        }),
     ]
     defaults = {"n": 1}
 

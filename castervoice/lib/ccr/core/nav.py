@@ -222,7 +222,8 @@ class Navigation(MergeRule):
     mapping = {
         "test":
             #R(Function(context.test)),
-            R(Function(lex.get_gaze_position)),
+            #R(Function(lex.get_gaze_position)),
+            R(Function(lex.get_current_file)),
         "testy testy":
             R(Function(lex.test2)),
         "zoom in|zooming|enhance":
@@ -648,7 +649,7 @@ class Reuse(MappingRule):
 class JustDictation(MappingRule):
     mapping = {
         "say <text>":
-            R(Text("%(text)s")),
+            R(Text("%(text)s ")),
     }
     
     extras = [
