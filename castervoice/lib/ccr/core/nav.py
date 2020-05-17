@@ -46,6 +46,8 @@ class NavigationNon(MergeRule):
     mapping = {
         "strafe":
             R(Function(lex.strafe)),
+        "orbit":
+            R(Function(lex.orbit)),
         "stop moving":
             R(Function(lex.stop_moving)),
         "new word <text>":
@@ -446,6 +448,10 @@ class Navigation(MergeRule):
 			R(Key("s-home, s-home, s-up:%(nnavi10)s")),
 		"dupes [<nnavi10>]":
 			R(Key("s-end, s-down:%(nnavi10)s, s-end")),
+        "multi down (<nnavi10>)":
+            R(Key("sa-down:%(nnavi10)s")),
+        "multi up (<nnavi10>)":
+            R(Key("sa-up:%(nnavi10)s")),
         #"sauce wally [<nnavi10>]":
             #R(Key("c-home:%(nnavi10)s")),
         #"dunce wally [<nnavi10>]":

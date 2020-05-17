@@ -131,6 +131,10 @@ def strafe():
     global d
     d.Strafe()
     
+def orbit():
+    global d
+    d.Orbit()
+    
 def stop_moving():
     global d
     d.StopMoving()
