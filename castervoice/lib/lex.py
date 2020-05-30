@@ -98,6 +98,7 @@ try:
     d.Test2.restype = ctypes.c_char_p
     d.GetCurrentFile.restype = ctypes.c_char_p
     d.GetCurrentFolder.restype = ctypes.c_char_p
+    d.ClickText.restype = ctypes.c_char_p
     
     d.Initialize()
     i = d.Test()
@@ -105,6 +106,11 @@ try:
     x = d.GetX()
     y = d.GetY()
     print("x:{} y:{}".format(x, y))
+    
+    print("Initializing character recognition...")
+    d.InitCharacterRecognition()
+    print("Done.")
+    
 except Exception as e:
     print("Exception: {}".format(e))
     track = traceback.format_exc()
@@ -138,6 +144,15 @@ def orbit():
 def stop_moving():
     global d
     d.StopMoving()
+    
+def click_text(textnv):
+    global d
+    result = d.ClickText(ctypes.c_char_p(str(textnv)))
+    print(result)
+    
+def test_text():
+    global d
+    d.TestText()
     
 def test2():
     global d

@@ -222,10 +222,13 @@ class Navigation(MergeRule):
     pronunciation = CCRMerger.CORE[1]
 
     mapping = {
+        "(click|kick|touch) <textnv>":
+            R(Function(lex.click_text)),
         "test":
             #R(Function(context.test)),
             #R(Function(lex.get_gaze_position)),
-            R(Function(lex.get_current_file)),
+            #R(Function(lex.get_current_file)),
+            R(Function(lex.test_text)),
         "testy testy":
             R(Function(lex.test2)),
         "zoom in|zooming|enhance":

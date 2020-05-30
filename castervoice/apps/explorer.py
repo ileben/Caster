@@ -59,6 +59,8 @@ class IERule(MergeRule):
             R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:remove /path:{}")),
         "subversion [<folder>] rename":
             R(Function(lex.current_file_command, extra={"folder"}, command="TortoiseProc.exe /command:rename /path:{}")),
+        "console here":
+            R(Function(lex.current_file_command, folder=True, command="C:\\Program Files\\ConEmu\\ConEmu64.exe -dir \"{}\"")),
     }
     extras = [
         Dictation("text"),
