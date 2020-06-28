@@ -11,6 +11,7 @@ from castervoice.lib.alphanumeric import caster_alphabet
 from castervoice.lib.context import BracketClamp
 from castervoice.lib.context import NavigationAction
 from castervoice.lib import lex
+from castervoice.lib import programming
 
 _NEXUS = control.nexus()
 
@@ -222,8 +223,10 @@ class Navigation(MergeRule):
     pronunciation = CCRMerger.CORE[1]
 
     mapping = {
-        "(click|kick|touch) <textnv>":
+        "(click|kick) <textnv>":
             R(Function(lex.click_text)),
+        "(touch) <textnv>":
+            R(Function(lex.touch_text)),
         "test":
             #R(Function(context.test)),
             #R(Function(lex.get_gaze_position)),
@@ -337,6 +340,10 @@ class Navigation(MergeRule):
         # keyboard shortcuts
         '(shock|Shaw|show) [<nnavi50>]':
             R(Key("enter"), rspec="shock")*Repeat(extra="nnavi50"),
+        "tabby [<nnavi10>]":
+            R(Key("tab"))*Repeat(extra="nnavi10"),
+        "(back | shin) tabby [<nnavi10>]":
+            R(Key("s-tab"))*Repeat(extra="nnavi10"),
         # "(<mtn_dir> | <mtn_mode> [<mtn_dir>]) [(<nnavi500> | <extreme>)]":
         #     R(Function(text_utils.master_text_nav)), # this is now implemented below
         "shift click":
@@ -636,36 +643,3 @@ class Navigation(MergeRule):
 
 	
 control.global_rule(Navigation())
-
-class Reuse(MappingRule):
-    mapping = {
-        "(<capitalization> <spacing> | <capitalization> | <spacing>) [(bow|bowel)] <textnv>":
-            R(Function(textformat.master_format_text)),
-        #"reuse <textnv>":
-        #    R(Function(textformat.master_format_text, spacing="snake", capitalization="laws")),
-    }
-    
-    extras = [
-        Dictation("textnv"),
-        Choice("capitalization", capitalization_dict),
-        Choice("spacing", spacing_dict),
-    ]
-    defaults = {
-        "capitalization": 0,
-        "spacing": 0,
-    }
-    
-class JustDictation(MappingRule):
-    mapping = {
-        "say <text>":
-            R(Text("%(text)s ")),
-    }
-    
-    extras = [
-        Dictation("text"),
-    ]
-    
-grammar = Grammar("EveryUseGrammar")
-grammar.add_rule(Reuse())
-grammar.add_rule(JustDictation())
-grammar.load()

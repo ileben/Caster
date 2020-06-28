@@ -1,5 +1,6 @@
 from castervoice.lib import context
 from castervoice.lib.imports import *
+
 import ctypes
 import traceback
 import os
@@ -98,7 +99,6 @@ try:
     d.Test2.restype = ctypes.c_char_p
     d.GetCurrentFile.restype = ctypes.c_char_p
     d.GetCurrentFolder.restype = ctypes.c_char_p
-    d.ClickText.restype = ctypes.c_char_p
     
     d.Initialize()
     i = d.Test()
@@ -147,8 +147,11 @@ def stop_moving():
     
 def click_text(textnv):
     global d
-    result = d.ClickText(ctypes.c_char_p(str(textnv)))
-    print(result)
+    d.ClickText(ctypes.c_char_p(str(textnv)))
+    
+def touch_text(textnv):
+    global d
+    d.TouchText(ctypes.c_char_p(str(textnv)))
     
 def test_text():
     global d
@@ -198,23 +201,3 @@ def zoom_push():
     global d
     d.ZoomPush()
     
-class SpellingAction(ActionBase):
-    def _execute(self, data=None):
-        letters = data["letters"]
-        for big_letter in letters:
-            alphanumeric.letters2(big=big_letter[0], letter=big_letter[1])
-    
-class Spelling(MappingRule):
-    mapping = {
-        "spell <letters>":
-            R(SpellingAction()),
-    }
-    
-    extras = [
-        # workaround for the lack of repetition in mapping rule syntax
-        Repetition(Sequence([Optional(Literal("big")), alphanumeric.get_alphabet_choice("letter")]), max=20, name="letters"),
-    ]
-    
-grammar = Grammar("SpellingGrammar")
-grammar.add_rule(Spelling())
-grammar.load()

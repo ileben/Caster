@@ -1,4 +1,4 @@
-from dragonfly import Choice, Repeat
+from dragonfly import Choice, Repeat, MappingRule
 
 from castervoice.lib import control
 from castervoice.lib.actions import Key, Text
@@ -64,7 +64,7 @@ text_punc_dict = {
 
 class Punctuation(MergeRule):
     pronunciation = CCRMerger.CORE[3]
-
+    
     mapping = {
         "[<long>] <text_punc> [<npunc>]":
             R(Text("%(long)s" + "%(text_punc)s" + "%(long)s"))*Repeat(extra="npunc"),
@@ -73,16 +73,12 @@ class Punctuation(MergeRule):
             R(Text("%(long)s" + "\\" + "%(long)s"))*Repeat(extra="npunc"),
         "<double_text_punc> [<npunc>]":
             R(Text("%(double_text_punc)s") + Key("left"))*Repeat(extra="npunc"),
-        "tabby [<npunc>]":
-            R(Key("tab"))*Repeat(extra="npunc"),
-        "(back | shin) tabby [<npunc>]":
-            R(Key("s-tab"))*Repeat(extra="npunc"),
         "boom [<npunc>]":
             R(Text(", "))*Repeat(extra="npunc"),
         "bam [<npunc>]":
             R(Text(". "))*Repeat(extra="npunc"),
-        "ace [<npunc100>]":
-            R(Text(" "))*Repeat(extra="npunc100"),
+        #"ace [<npunc100>]":
+            #R(Text(" "))*Repeat(extra="npunc100"),
     }
 
     extras = [
@@ -100,6 +96,36 @@ class Punctuation(MergeRule):
     defaults = {
         "npunc": 1,
         "npunc100": 1,
+        "long": "",
+    }
+    
+# Reduced complexity for chaining into ProgrammingRule
+class RecursivePunctuation(MappingRule):
+    mapping = {
+        "[<long>] <text_punc>":
+            R(Text("%(long)s" + "%(text_punc)s" + "%(long)s"))*Repeat(extra="npunc"),
+        # For some reason, this one doesn't work through the other function
+        "[<long>] backslash":
+            R(Text("%(long)s" + "\\" + "%(long)s"))*Repeat(extra="npunc"),
+        "<double_text_punc>":
+            R(Text("%(double_text_punc)s") + Key("left"))*Repeat(extra="npunc"),
+        "boom":
+            R(Text(", "))*Repeat(extra="npunc"),
+    }
+
+    extras = [
+        IntegerRefST("npunc", 0, 10),
+        Choice(
+            "long", {
+                "long": " ",
+            }),
+        Choice(
+            "text_punc", text_punc_dict),
+        Choice(
+            "double_text_punc", double_text_punc_dict)
+    ]
+    defaults = {
+        "npunc": 1,
         "long": "",
     }
 
