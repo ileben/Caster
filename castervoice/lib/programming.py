@@ -62,6 +62,10 @@ class Programming(RecursiveRule):
         Repetition(RuleRef(ProgrammingOptions()), name="ProgrammingOptions", max=20),
     ]
     
+# Including dictation in a grammar weakens the recognition of everything else, such as spelling.
+# This can be avoided by moving the speed/accuracy slider in Dragon further up towards accuracy
+# but that makes everything much slower. This rule here is a workaround to improve accuracy
+# when you're only using spelling and punctuation. For this to work it has to be in a separate grammar.
 class NoDictProgrammingOptions(RecursiveRule):
     spec = "<Spelling> | <Punctuation>"
     extras = [
@@ -76,6 +80,7 @@ class NoDictProgramming(RecursiveRule):
         Repetition(RuleRef(NoDictProgrammingOptions()), name="ProgrammingOptions", max=20),
     ]
     
+# This is for when you really want to make sure that everything is recognized as a literal word
 class JustDictation(MappingRule):
     mapping = {
         "dictate <text>":
@@ -84,7 +89,7 @@ class JustDictation(MappingRule):
     extras = [
         Dictation("text"),
     ]
-    
+
 grammar = Grammar("ProgrammingWithoutDictation")
 grammar.add_rule(NoDictProgramming())
 grammar.load()

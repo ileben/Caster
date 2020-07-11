@@ -17,8 +17,8 @@ class IERule(MergeRule):
             R(Key("a-f, w, t")),
         "(show | file | folder) properties":
             R(Key("a-enter")),
-        "folder up | get up":
-            R(Key("a-up")),
+        "(folder up | get up) [<n>]":
+            R(Key("a-up/100")*Repeat(extra="n")),
         "get back":
             R(Key("a-left")),
         "get forward":

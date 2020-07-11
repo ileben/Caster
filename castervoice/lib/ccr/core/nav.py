@@ -450,7 +450,9 @@ class Navigation(MergeRule):
         # keystroke commands
         "<direction> [<nnavi500>]":
             R(Key("%(direction)s")*Repeat(extra='nnavi500'), rdescript="arrow keys"),
-		"home [<nnavi10>]":
+		"back to top":
+            R(Key("c-home")),
+        "home [<nnavi10>]":
             R(Key("home:%(nnavi10)s")),
 		"(end | and) [<nnavi10>]":
             R(Key("end:%(nnavi10)s")),
